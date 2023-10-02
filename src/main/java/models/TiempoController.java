@@ -33,6 +33,9 @@ public class TiempoController {
                         );
                 @val
                 List<Tiempo> tiempoList = mediciones.toList();
+
+
+
             }catch(IOException e){
                 System.err.println("Error en lectura de archivo:" + archivo + e.getMessage());
             }
