@@ -1,5 +1,7 @@
 package models;
 
+import lombok.val;
+
 import java.io.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -8,20 +10,35 @@ import java.util.stream.Stream;
 
 public class TiempoController {
 
-    private void csvReader(String csv){
-        String csvLocation = "C:\\DAW\\Desarrollo Web entorno Servidor\\Primer Trimestre\\Practicas\\AemetLuisAlex\\data\\Aemet20171029.csv";
+    private void csvReader(){
 
-        try(BufferedReader lector = new BufferedReader(new FileReader(csvLocation))){
-            Stream<Tiempo> medicionesTiempo = lector.lines()
-                    .map(linea -> linea.split(";"))
-                    .map(valores -> new Tiempo(valores[0], valores[1],Double.parseDouble(valores[2]),
-                            LocalTime.parse(valores[3]), Double.parseDouble(valores[4]),
-                            LocalTime.parse(valores[6]), Double.parseDouble(valores[6])));
+        List<String> archivosCsv = new ArrayList<>();
+        archivosCsv.add(System.getProperty("user.dir") + "/data/Aemet20171029.csv");
+        archivosCsv.add(System.getProperty("user.dir") + "/data/Aemet20171030.csv");
+        archivosCsv.add(System.getProperty("user.dir") + "/data/Aemet20171031.csv");
 
-                    medicionesTiempo.forEach(System.out::println);
-        } catch (IOException e) {
-            e.printStackTrace();
+        for (String archivo : archivosCsv ) {
+            try(BufferedReader lector = new BufferedReader(new FileReader(archivo))){
+                Stream<Tiempo> mediciones = lector.lines()
+                        .map(linea -> linea.split(","))
+                        .map(valores -> Tiempo.builder()
+                                .localidad(valores[0])
+                                .provincia(valores[1])
+                                .temMax(Double.parseDouble(valores[3]))
+                                .horaTemMax(LocalTime.parse(valores[4]))
+                                .temMin(Double.parseDouble(valores[5]))
+                                .horaTemMin(LocalTime.parse(valores[6]))
+                                .precipitacion(Double.parseDouble(valores[7]))
+                                .build()
+                        );
+                @val
+                List<Tiempo> tiempoList = mediciones.toList();
+            }catch(IOException e){
+                System.err.println("Error en lectura de archivo:" + archivo + e.getMessage());
+            }
+
         }
+
     }
 
 
